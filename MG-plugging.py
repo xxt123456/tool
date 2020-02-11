@@ -31,7 +31,8 @@ url_list=[
     'https://www.cnblogs.com/',
     'https://www.cnblogs.com/news/',
     'https://cn.bing.com/',
-    'https://stackoverflow.com/',
+    'https://www.cctv.com/',
+    'https://www.4399.com/',
 ]
 
 ###放行列表#####
@@ -39,15 +40,22 @@ pass_list=[
     'http://www.baidu.com/',
 ]
 
-i=0
-while i<10:
+i=1
+while i<10: #控制访问次数
     for url in url_list:
+        print(i)
+        i +=1
+        if i >9: #总访问次数-1
+            break
         deferred=getPage(bytes(url,encoding='utf-8'))
         deferred.addCallback(get_response,url)
         deferred.addErrback(errorHandler,url)
         deferred_list.append(deferred)
-        i +=1
+
+
 
 dlist = defer.DeferredList(deferred_list)
+dlist.addTimeout(30, reactor)#超时取消
 dlist.addBoth(stop_loop)
 reactor.run()
+
